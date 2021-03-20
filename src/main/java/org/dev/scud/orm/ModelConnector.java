@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.dev.scud.models.User;
 
-//TODO сделать защиту от sql инъекций
 public class ModelConnector {
     DbConnectionDriver driver;
 
