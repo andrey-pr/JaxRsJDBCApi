@@ -45,6 +45,8 @@ public class UsersResource {
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(403).entity("{}").build();
         }
     }
 
@@ -67,6 +69,8 @@ public class UsersResource {
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(403).entity("{}").build();
         }
     }
 
@@ -94,6 +98,8 @@ public class UsersResource {
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(403).entity("{}").build();
         }
     }
 
@@ -118,6 +124,8 @@ public class UsersResource {
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(403).entity("{}").build();
         }
     }
 }

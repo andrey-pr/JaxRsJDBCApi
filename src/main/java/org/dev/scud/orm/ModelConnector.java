@@ -28,6 +28,9 @@ public class ModelConnector {
     }
 
     public User getUser(String id) throws SQLException {
+        if (isSqlInjection(id)) {
+            throw new IllegalArgumentException("SQL injection detected");
+        }
         ResultSet rs = driver.executeSqlQuery("SELECT * FROM users WHERE id='" + id + "';");
         if (!rs.next()) {
             return null;
@@ -41,11 +44,14 @@ public class ModelConnector {
         return getUser(id.toString());
     }
 
-    public boolean createUser(UUID id, String name) throws SQLException {
+    public boolean createUser(String id, String name) throws SQLException {
+        if (isSqlInjection(id) || isSqlInjection(name)) {
+            throw new IllegalArgumentException("SQL injection detected");
+        }
         try {
             driver.executeSql(
                     "INSERT INTO users (`id`, `name`) VALUES ('"
-                            + id.toString() + "', '" + name + "');");
+                            + id + "', '" + name + "');");
             driver.closeStatement();
             return true;
         } catch (SQLIntegrityConstraintViolationException e) {
@@ -54,11 +60,18 @@ public class ModelConnector {
         }
     }
 
+    public boolean createUser(UUID id, String name) throws SQLException {
+        return createUser(id.toString(), name);
+    }
+
     public boolean createUser(User user) throws SQLException {
         return createUser(user.id, user.name);
     }
 
     public boolean updateUser(String id, String name) throws SQLException {
+        if (isSqlInjection(id) || isSqlInjection(name)) {
+            throw new IllegalArgumentException("SQL injection detected");
+        }
         int res = driver.executeSql(
                 "UPDATE users SET `name` = '" + name + "' WHERE (`id` = '" + id + "');");
         driver.closeStatement();
@@ -74,6 +87,9 @@ public class ModelConnector {
     }
 
     public boolean deleteUser(String id) throws SQLException {
+        if (isSqlInjection(id)) {
+            throw new IllegalArgumentException("SQL injection detected");
+        }
         int res = driver.executeSql("DELETE FROM users WHERE id = '" + id + "';");
         driver.closeStatement();
         return res > 0;
@@ -89,5 +105,14 @@ public class ModelConnector {
 
     public void disconnect() throws SQLException {
         driver.disconnect();
+    }
+
+    private boolean isSqlInjection(String s) {
+        return s.contains("'\0") || s.contains("'")
+                || s.contains("\"") || s.contains("\b")
+                || s.contains("\n") || s.contains("\r")
+                || s.contains("\t") || s.contains("" + (char) 26)
+                || s.contains("\\") || s.contains("%")
+                || s.contains("_") || s.contains("`"); //TODO проверить список опасных симвоолов
     }
 }
