@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import org.dev.scud.models.User;
 import org.dev.scud.orm.ModelConnector;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 @Path("/users")
 public class UsersResource {
     @GET
@@ -36,16 +37,15 @@ public class UsersResource {
             ModelConnector mc = new ModelConnector();
             Gson gson = new Gson();
             User user = mc.getUser(id);
-            if (user == null) {
+            if (user == null)
                 return Response.status(404).entity("{}").build();
-            }
             String json = gson.toJson(user);
             mc.disconnect();
             return Response.ok().entity(json).build();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
             return Response.status(403).entity("{}").build();
         }
     }
@@ -53,23 +53,21 @@ public class UsersResource {
     @PUT
     @Path("/add{name: (/name)?}")
     public Response addUser(@QueryParam("name") String name) {
-        if (name == null) {
+        if (name == null)
             return Response.status(400).entity("{}").build();
-        }
         try {
             ModelConnector mc = new ModelConnector();
             Gson gson = new Gson();
             User user = new User(UUID.randomUUID(), name);
-            if (!mc.createUser(user)) {
+            if (!mc.createUser(user))
                 return Response.status(400).entity("{}").build();
-            }
             String json = gson.toJson(user);
             mc.disconnect();
             return Response.ok().entity(json).build();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
             return Response.status(403).entity("{}").build();
         }
     }
@@ -77,9 +75,8 @@ public class UsersResource {
     @POST
     @Path("/update{id: (/id)?}{name: (/name)?}")
     public Response updateUser(@QueryParam("id") String id, @QueryParam("name") String name) {
-        if (id == null || name == null) {
+        if (id == null || name == null)
             return Response.status(400).entity("{}").build();
-        }
         try {
             ModelConnector mc = new ModelConnector();
             Gson gson = new Gson();
@@ -89,16 +86,15 @@ public class UsersResource {
                 return Response.status(400).entity("{}").build();
             }
             User user = new User(UUID.fromString(id), name);
-            if (!mc.updateUser(user)) {
+            if (!mc.updateUser(user))
                 return Response.status(400).entity("{}").build();
-            }
             String json = gson.toJson(user);
             mc.disconnect();
             return Response.ok().entity(json).build();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
             return Response.status(403).entity("{}").build();
         }
     }
@@ -106,9 +102,8 @@ public class UsersResource {
     @DELETE
     @Path("/delete/{id}")
     public Response deleteUser(@PathParam("id") String id) {
-        if (id == null) {
+        if (id == null)
             return Response.status(400).entity("{}").build();
-        }
         try {
             ModelConnector mc = new ModelConnector();
             try {
@@ -124,7 +119,7 @@ public class UsersResource {
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
             return Response.status(403).entity("{}").build();
         }
     }

@@ -1,5 +1,6 @@
 package org.dev.scud.models;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class User {
@@ -23,5 +24,18 @@ public class User {
                 + ", name='"
                 + name + '\''
                 + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id) && name.equals(user.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

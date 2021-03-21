@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.dev.scud.models.User;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class ModelConnector {
     DbConnectionDriver driver;
 
@@ -26,27 +27,26 @@ public class ModelConnector {
         return users;
     }
 
-    public User getUser(String id) throws SQLException {
-        if (isSqlInjection(id)) {
-            throw new IllegalArgumentException("SQL injection detected");
-        }
+    public User getUser(String id) throws SQLException, IllegalAccessException {
+        if (isSqlInjection(id))
+            throw new IllegalAccessException("SQL injection detected");
+        UUID.fromString(id);
         ResultSet rs = driver.executeSqlQuery("SELECT * FROM users WHERE id='" + id + "';");
-        if (!rs.next()) {
+        if (!rs.next())
             return null;
-        }
         User user = new User(rs.getString("id"), rs.getString("name"));
         driver.closeStatement();
         return user;
     }
 
-    public User getUser(UUID id) throws SQLException {
+    public User getUser(UUID id) throws SQLException, IllegalAccessException {
         return getUser(id.toString());
     }
 
-    public boolean createUser(String id, String name) throws SQLException {
-        if (isSqlInjection(id) || isSqlInjection(name)) {
-            throw new IllegalArgumentException("SQL injection detected");
-        }
+    public boolean createUser(String id, String name) throws SQLException, IllegalAccessException {
+        if (isSqlInjection(id) || isSqlInjection(name))
+            throw new IllegalAccessException("SQL injection detected");
+        UUID.fromString(id);
         try {
             driver.executeSql(
                     "INSERT INTO users (`id`, `name`) VALUES ('"
@@ -59,46 +59,46 @@ public class ModelConnector {
         }
     }
 
-    public boolean createUser(UUID id, String name) throws SQLException {
+    public boolean createUser(UUID id, String name) throws SQLException, IllegalAccessException {
         return createUser(id.toString(), name);
     }
 
-    public boolean createUser(User user) throws SQLException {
+    public boolean createUser(User user) throws SQLException, IllegalAccessException {
         return createUser(user.id, user.name);
     }
 
-    public boolean updateUser(String id, String name) throws SQLException {
-        if (isSqlInjection(id) || isSqlInjection(name)) {
-            throw new IllegalArgumentException("SQL injection detected");
-        }
+    public boolean updateUser(String id, String name) throws SQLException, IllegalAccessException {
+        if (isSqlInjection(id) || isSqlInjection(name))
+            throw new IllegalAccessException("SQL injection detected");
+        UUID.fromString(id);
         int res = driver.executeSql(
                 "UPDATE users SET `name` = '" + name + "' WHERE (`id` = '" + id + "');");
         driver.closeStatement();
         return res > 0;
     }
 
-    public boolean updateUser(UUID id, String name) throws SQLException {
+    public boolean updateUser(UUID id, String name) throws SQLException, IllegalAccessException {
         return updateUser(id.toString(), name);
     }
 
-    public boolean updateUser(User user) throws SQLException {
+    public boolean updateUser(User user) throws SQLException, IllegalAccessException {
         return updateUser(user.id.toString(), user.name);
     }
 
-    public boolean deleteUser(String id) throws SQLException {
-        if (isSqlInjection(id)) {
-            throw new IllegalArgumentException("SQL injection detected");
-        }
+    public boolean deleteUser(String id) throws SQLException, IllegalAccessException {
+        if (isSqlInjection(id))
+            throw new IllegalAccessException("SQL injection detected");
+        UUID.fromString(id);
         int res = driver.executeSql("DELETE FROM users WHERE id = '" + id + "';");
         driver.closeStatement();
         return res > 0;
     }
 
-    public boolean deleteUser(UUID id) throws SQLException {
+    public boolean deleteUser(UUID id) throws SQLException, IllegalAccessException {
         return deleteUser(id.toString());
     }
 
-    public boolean deleteUser(User user) throws SQLException {
+    public boolean deleteUser(User user) throws SQLException, IllegalAccessException {
         return deleteUser(user.id.toString());
     }
 

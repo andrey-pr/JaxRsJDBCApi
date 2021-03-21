@@ -10,7 +10,8 @@ import org.dev.scud.orm.ModelConnector;
 
 //TODO написать тесты
 public class DebugMain {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args)
+            throws SQLException, ClassNotFoundException, IllegalAccessException {
         ModelConnector mc = new ModelConnector();
         //System.out.println(mc.createUser(UUID.randomUUID(), "name"));
         //System.out.println(mc.getUser("289dbe8a-7513-46be-ad42-42d58fe3991f"));
