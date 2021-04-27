@@ -8,22 +8,33 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.se.SeContainer;
+import jakarta.enterprise.inject.se.SeContainerInitializer;
+import jakarta.inject.Inject;
 import org.dev.scud.models.User;
-import org.dev.scud.orm.ModelConnector;
+import org.dev.scud.orm.UserModelConnector;
+import org.dev.scud.orm.interfaces.UserModelConnectorInterface;
+import org.jboss.weld.environment.se.Weld;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @Path("/users")
+@RequestScoped
 public class UsersResource {
+
+    @Inject
+    private UserModelConnectorInterface mc;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers() {
         try {
-            ModelConnector mc = new ModelConnector();
+            //UserModelConnectorInterface mc = new UserModelConnector();
             Gson gson = new Gson();
             String json = gson.toJson(mc.getAllUsers());
             mc.disconnect();
             return Response.ok().entity(json).build();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
         }
@@ -34,7 +45,7 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUser(@PathParam("id") String id) {
         try {
-            ModelConnector mc = new ModelConnector();
+            UserModelConnectorInterface mc = new UserModelConnector();
             Gson gson = new Gson();
             User user = mc.getUser(id);
             if (user == null)
@@ -56,7 +67,7 @@ public class UsersResource {
         if (name == null)
             return Response.status(400).entity("{}").build();
         try {
-            ModelConnector mc = new ModelConnector();
+            UserModelConnectorInterface mc = new UserModelConnector();
             Gson gson = new Gson();
             User user = new User(UUID.randomUUID(), name);
             if (!mc.createUser(user))
@@ -78,7 +89,7 @@ public class UsersResource {
         if (id == null || name == null)
             return Response.status(400).entity("{}").build();
         try {
-            ModelConnector mc = new ModelConnector();
+            UserModelConnectorInterface mc = new UserModelConnector();
             Gson gson = new Gson();
             try {
                 UUID.fromString(id);
@@ -105,7 +116,7 @@ public class UsersResource {
         if (id == null)
             return Response.status(400).entity("{}").build();
         try {
-            ModelConnector mc = new ModelConnector();
+            UserModelConnectorInterface mc = new UserModelConnector();
             try {
                 UUID.fromString(id);
             } catch (IllegalArgumentException e) {

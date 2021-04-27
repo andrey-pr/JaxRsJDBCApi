@@ -3,19 +3,40 @@ package org.dev.scud.orm;
 import java.sql.*;
 import java.util.UUID;
 
+import jakarta.annotation.Resource;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.Path;
+import org.dev.scud.dbdriver.DbConnectionDriver;
 import org.dev.scud.models.User;
+import org.dev.scud.orm.interfaces.UserModelConnectorInterface;
+
+import javax.sql.DataSource;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class ModelConnector {
+@Default
+@ApplicationScoped
+@Singleton
+@Path("singleton-bean")
+public class UserModelConnector implements UserModelConnectorInterface {
     DbConnectionDriver driver;
 
-    public ModelConnector() throws SQLException, ClassNotFoundException {
+    @Resource(name = "jdbc/cditest")
+    DataSource ds;
+
+    public UserModelConnector() throws SQLException, ClassNotFoundException {
         driver = new DbConnectionDriver();
         driver.connect();
     }
 
+    @Override
     public User[] getAllUsers() throws SQLException {
-        ResultSet rs = driver.executeSqlQuery("SELECT COUNT(*) AS total FROM users;");
+        Connection conn;
+        Statement statement;
+        conn = ds.getConnection();
+        statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery("SELECT COUNT(*) AS total FROM users;");
         rs.next();
         User[] users = new User[rs.getInt("total")];
         rs = driver.executeSqlQuery("SELECT * FROM users;");
@@ -23,10 +44,11 @@ public class ModelConnector {
             rs.next();
             users[i] = new User(rs.getString("id"), rs.getString("name"));
         }
-        driver.closeStatement();
+        statement.close();
         return users;
     }
 
+    @Override
     public User getUser(String id) throws SQLException, IllegalAccessException {
         if (isSqlInjection(id))
             throw new IllegalAccessException("SQL injection detected");
@@ -39,10 +61,12 @@ public class ModelConnector {
         return user;
     }
 
+    @Override
     public User getUser(UUID id) throws SQLException, IllegalAccessException {
         return getUser(id.toString());
     }
 
+    @Override
     public boolean createUser(String id, String name) throws SQLException, IllegalAccessException {
         if (isSqlInjection(id) || isSqlInjection(name))
             throw new IllegalAccessException("SQL injection detected");
@@ -59,14 +83,17 @@ public class ModelConnector {
         }
     }
 
+    @Override
     public boolean createUser(UUID id, String name) throws SQLException, IllegalAccessException {
         return createUser(id.toString(), name);
     }
 
+    @Override
     public boolean createUser(User user) throws SQLException, IllegalAccessException {
         return createUser(user.id, user.name);
     }
 
+    @Override
     public boolean updateUser(String id, String name) throws SQLException, IllegalAccessException {
         if (isSqlInjection(id) || isSqlInjection(name))
             throw new IllegalAccessException("SQL injection detected");
@@ -77,14 +104,17 @@ public class ModelConnector {
         return res > 0;
     }
 
+    @Override
     public boolean updateUser(UUID id, String name) throws SQLException, IllegalAccessException {
         return updateUser(id.toString(), name);
     }
 
+    @Override
     public boolean updateUser(User user) throws SQLException, IllegalAccessException {
         return updateUser(user.id.toString(), user.name);
     }
 
+    @Override
     public boolean deleteUser(String id) throws SQLException, IllegalAccessException {
         if (isSqlInjection(id))
             throw new IllegalAccessException("SQL injection detected");
@@ -94,14 +124,17 @@ public class ModelConnector {
         return res > 0;
     }
 
+    @Override
     public boolean deleteUser(UUID id) throws SQLException, IllegalAccessException {
         return deleteUser(id.toString());
     }
 
+    @Override
     public boolean deleteUser(User user) throws SQLException, IllegalAccessException {
         return deleteUser(user.id.toString());
     }
 
+    @Override
     public void disconnect() throws SQLException {
         driver.disconnect();
     }

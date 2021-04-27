@@ -1,8 +1,7 @@
 package org.dev.scud.servlets.jaxrslets;
 
-import com.google.gson.Gson;
 import org.dev.scud.models.User;
-import org.dev.scud.orm.ModelConnector;
+import org.dev.scud.orm.UserModelConnector;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -15,7 +14,7 @@ class UsersResourceTest {
 
     @Test
     void getAllUsers() throws SQLException, ClassNotFoundException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         mc.getAllUsers();
         mc.disconnect();
     }
@@ -23,7 +22,7 @@ class UsersResourceTest {
     @Test
     void getAllUsersContentTest()
             throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         User user = new User(UUID.randomUUID(), "Swift");
         mc.createUser(user);
         boolean contains = Arrays.asList(mc.getAllUsers()).contains(user);
@@ -34,7 +33,7 @@ class UsersResourceTest {
 
     @Test
     void getUser() throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         User user = new User(UUID.randomUUID(), "Swift");
         mc.createUser(user);
         boolean contains = mc.getUser(user.id).equals(user);
@@ -45,7 +44,7 @@ class UsersResourceTest {
 
     @Test
     void getUserNull() throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         boolean isNull = mc.getUser(UUID.randomUUID()) == null;
         mc.disconnect();
         assertTrue(isNull);
@@ -53,7 +52,7 @@ class UsersResourceTest {
 
     @Test
     void getUserSqlInjection() throws SQLException, ClassNotFoundException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         boolean isBlocked;
         try {
             mc.getUser("'");
@@ -68,7 +67,7 @@ class UsersResourceTest {
     @Test
     void getUserIncorrectUuid()
             throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         boolean isBlocked;
         try {
             mc.getUser("1");
@@ -82,7 +81,7 @@ class UsersResourceTest {
 
     @Test
     void addUser() throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         User user = new User(UUID.randomUUID(), "Swift");
         mc.createUser(user);
         boolean contains = mc.getUser(user.id).equals(user);
@@ -93,7 +92,7 @@ class UsersResourceTest {
 
     @Test
     void addUserSqlInjection() throws SQLException, ClassNotFoundException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         boolean isBlocked;
         try {
             mc.createUser("'", "'");
@@ -108,7 +107,7 @@ class UsersResourceTest {
     @Test
     void addUserIncorrectUuid()
             throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         boolean isBlocked;
         try {
             mc.createUser("1", "1");
@@ -122,7 +121,7 @@ class UsersResourceTest {
 
     @Test
     void updateUser() throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         User user = new User(UUID.randomUUID(), "Swift");
         mc.createUser(user);
         user.name = "John";
@@ -135,7 +134,7 @@ class UsersResourceTest {
 
     @Test
     void updateUserSqlInjection() throws SQLException, ClassNotFoundException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         boolean isBlocked;
         try {
             mc.updateUser("'", "'");
@@ -150,7 +149,7 @@ class UsersResourceTest {
     @Test
     void updateUserIncorrectUuid()
             throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         boolean isBlocked;
         try {
             mc.updateUser("1", "1");
@@ -164,7 +163,7 @@ class UsersResourceTest {
 
     @Test
     void deleteUser() throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         User user = new User(UUID.randomUUID(), "Swift");
         mc.createUser(user);
         boolean contains = mc.getUser(user.id).equals(user);
@@ -175,7 +174,7 @@ class UsersResourceTest {
 
     @Test
     void deleteUserSqlInjection() throws SQLException, ClassNotFoundException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         boolean isBlocked;
         try {
             mc.deleteUser("'");
@@ -190,7 +189,7 @@ class UsersResourceTest {
     @Test
     void deleteUserIncorrectUuid()
             throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         boolean isBlocked;
         try {
             mc.deleteUser("1");

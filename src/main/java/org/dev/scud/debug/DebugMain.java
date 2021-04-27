@@ -6,13 +6,13 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.UUID;
 
-import org.dev.scud.orm.ModelConnector;
+import org.dev.scud.orm.UserModelConnector;
 
 //TODO написать тесты
 public class DebugMain {
     public static void main(String[] args)
             throws SQLException, ClassNotFoundException, IllegalAccessException {
-        ModelConnector mc = new ModelConnector();
+        UserModelConnector mc = new UserModelConnector();
         //System.out.println(mc.createUser(UUID.randomUUID(), "name"));
         //System.out.println(mc.getUser("289dbe8a-7513-46be-ad42-42d58fe3991f"));
         System.out.println(Arrays.toString(mc.getAllUsers()));
