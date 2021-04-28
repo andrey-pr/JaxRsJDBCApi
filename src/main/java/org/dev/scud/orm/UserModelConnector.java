@@ -3,27 +3,20 @@ package org.dev.scud.orm;
 import java.sql.*;
 import java.util.UUID;
 
-import jakarta.annotation.Resource;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Default;
-import jakarta.inject.Singleton;
-import jakarta.ws.rs.Path;
 import org.dev.scud.dbdriver.DbConnectionDriver;
 import org.dev.scud.models.User;
 import org.dev.scud.orm.interfaces.UserModelConnectorInterface;
 
+import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
 import javax.sql.DataSource;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @Default
 @ApplicationScoped
-@Singleton
-@Path("singleton-bean")
 public class UserModelConnector implements UserModelConnectorInterface {
     DbConnectionDriver driver;
-
-    @Resource(name = "jdbc/cditest")
-    DataSource ds;
 
     public UserModelConnector() throws SQLException, ClassNotFoundException {
         driver = new DbConnectionDriver();
@@ -32,11 +25,7 @@ public class UserModelConnector implements UserModelConnectorInterface {
 
     @Override
     public User[] getAllUsers() throws SQLException {
-        Connection conn;
-        Statement statement;
-        conn = ds.getConnection();
-        statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT COUNT(*) AS total FROM users;");
+        ResultSet rs = driver.executeSqlQuery("SELECT COUNT(*) AS total FROM users;");
         rs.next();
         User[] users = new User[rs.getInt("total")];
         rs = driver.executeSqlQuery("SELECT * FROM users;");
@@ -44,7 +33,7 @@ public class UserModelConnector implements UserModelConnectorInterface {
             rs.next();
             users[i] = new User(rs.getString("id"), rs.getString("name"));
         }
-        statement.close();
+        driver.closeStatement();
         return users;
     }
 

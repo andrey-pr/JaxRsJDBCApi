@@ -4,18 +4,14 @@ import com.google.gson.Gson;
 
 import java.sql.SQLException;
 import java.util.UUID;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.enterprise.inject.se.SeContainer;
-import jakarta.enterprise.inject.se.SeContainerInitializer;
-import jakarta.inject.Inject;
 import org.dev.scud.models.User;
-import org.dev.scud.orm.UserModelConnector;
 import org.dev.scud.orm.interfaces.UserModelConnectorInterface;
-import org.jboss.weld.environment.se.Weld;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @Path("/users")
@@ -29,7 +25,6 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers() {
         try {
-            //UserModelConnectorInterface mc = new UserModelConnector();
             Gson gson = new Gson();
             String json = gson.toJson(mc.getAllUsers());
             mc.disconnect();
@@ -45,7 +40,6 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUser(@PathParam("id") String id) {
         try {
-            UserModelConnectorInterface mc = new UserModelConnector();
             Gson gson = new Gson();
             User user = mc.getUser(id);
             if (user == null)
@@ -53,7 +47,7 @@ public class UsersResource {
             String json = gson.toJson(user);
             mc.disconnect();
             return Response.ok().entity(json).build();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
         } catch (IllegalAccessException e) {
@@ -67,7 +61,6 @@ public class UsersResource {
         if (name == null)
             return Response.status(400).entity("{}").build();
         try {
-            UserModelConnectorInterface mc = new UserModelConnector();
             Gson gson = new Gson();
             User user = new User(UUID.randomUUID(), name);
             if (!mc.createUser(user))
@@ -75,7 +68,7 @@ public class UsersResource {
             String json = gson.toJson(user);
             mc.disconnect();
             return Response.ok().entity(json).build();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
         } catch (IllegalAccessException e) {
@@ -89,7 +82,6 @@ public class UsersResource {
         if (id == null || name == null)
             return Response.status(400).entity("{}").build();
         try {
-            UserModelConnectorInterface mc = new UserModelConnector();
             Gson gson = new Gson();
             try {
                 UUID.fromString(id);
@@ -102,7 +94,7 @@ public class UsersResource {
             String json = gson.toJson(user);
             mc.disconnect();
             return Response.ok().entity(json).build();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
         } catch (IllegalAccessException e) {
@@ -116,7 +108,6 @@ public class UsersResource {
         if (id == null)
             return Response.status(400).entity("{}").build();
         try {
-            UserModelConnectorInterface mc = new UserModelConnector();
             try {
                 UUID.fromString(id);
             } catch (IllegalArgumentException e) {
@@ -127,7 +118,7 @@ public class UsersResource {
             }
             mc.disconnect();
             return Response.ok().entity("{}").build();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return Response.status(500).entity("{}").build();
         } catch (IllegalAccessException e) {

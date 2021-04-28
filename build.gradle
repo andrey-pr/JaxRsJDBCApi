@@ -34,7 +34,6 @@ dependencies {
     compileOnly('javax.servlet:javax.servlet-api:4.0.1')
     compileOnly('javax:javaee-api:8.0.1')
     compileOnly('org.glassfish.jersey.ext.cdi:jersey-cdi1x:3.0.1')
-    compileOnly('org.glassfish.jersey.ext.cdi:jersey-cdi1x-ban-custom-hk2-binding:3.0.1')
 
     compile('mysql:mysql-connector-java:8.0.23')
 
